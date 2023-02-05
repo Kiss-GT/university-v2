@@ -1,8 +1,9 @@
 package com.kgt.university.controller;
 
-import com.kgt.university.commands.ProfessorCommand;
+
+import com.kgt.university.domain.Course;
+import com.kgt.university.domain.Professor;
 import com.kgt.university.services.ProfService;
-import com.kgt.university.services.UniversityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +30,7 @@ public class ProfessorController {
     }
     @RequestMapping("/newsprofessorform")
     public String addProfessor(Model model){
-        model.addAttribute("professor",new ProfessorCommand());
+        model.addAttribute("professor",new Professor());
         return "professorform";
     }
     @RequestMapping("professordetail/{profIdd}/update")
@@ -37,9 +38,25 @@ public class ProfessorController {
         model.addAttribute("professor", profService.findProfessorById(Long.valueOf(profIdd)));
         return "professorform";
     }
-    @PostMapping("professor")
-    public String sOrU(@ModelAttribute ProfessorCommand command){
-        ProfessorCommand savedCommand=profService.saveProfessorCommand(command);
+/*    @GetMapping("course/{professorId}/new")
+    public String newCourse(@PathVariable String professorId, Model model){
+        Professor professor=profService.findProfessorById(Long.valueOf(professorId));
+        Course course=new Course();
+        professor.setId(Long.valueOf(professorId));
+        model.addAttribute("course",course);
+        return "courseform";
+    }*/
+
+ /*   @GetMapping("professor/{professorId}/course/{id}/update")
+    public String updateProfessorCourse(@PathVariable String professorId,
+                                        @PathVariable String id,Model model){
+        model.addAttribute("course",courseService.findByProfessorAndCourseId(Long.valueOf(professorId),
+                Long.valueOf(id)));
+        return "courseform";
+    }*/
+    @PostMapping("professor/save")
+    public String sOrU(@ModelAttribute Professor command){
+        Professor savedCommand=profService.saveProfessor(command);
         System.out.println(savedCommand.getCourses());
         return "redirect:/professors";
     }
@@ -50,5 +67,6 @@ public class ProfessorController {
         System.out.println("Deleting"+profIdd);
         return "redirect:/professors";
     }
+
 
 }

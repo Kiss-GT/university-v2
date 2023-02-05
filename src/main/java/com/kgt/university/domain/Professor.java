@@ -34,9 +34,5 @@ public class Professor {
     private Set<Course> courses=new HashSet<>();
 
 
-    public Professor addCourse(Course course){
-        course.setProfessor(this);
-        this.courses.add(course);
-        return this;
-    }
+
 }

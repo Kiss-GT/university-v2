@@ -1,16 +1,16 @@
 package com.kgt.university.controller;
 
-import com.kgt.university.commands.CourseCommand;
-import com.kgt.university.commands.ProfessorCommand;
-import com.kgt.university.commands.StudentCommand;
-import com.kgt.university.repositories.CourseRepo;
+
+import com.kgt.university.domain.Course;
+import com.kgt.university.domain.Professor;
 import com.kgt.university.services.CourseService;
 import com.kgt.university.services.ProfService;
-import com.kgt.university.services.UniversityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -29,29 +29,42 @@ public class CourseController {
         model.addAttribute("courses", courseService.getCourses());
         return "courses";
     }
-    @GetMapping
-    @RequestMapping("professor/{professorId}/course/{id}/update")
-    public String updateProfessorCourse(@PathVariable String professorId,
-                                         @PathVariable String id,Model model){
-        model.addAttribute("course",courseService.findByProfessorAndCourseId(Long.valueOf(professorId),
-                Long.valueOf(id)));
-        return "courseform";
-    }
-    @GetMapping("course/{professorId}/new")
-    public String newCourse(@PathVariable String professorId, Model model){
-        ProfessorCommand professorCommand=profService.findProfessorCommandById(Long.valueOf(professorId));
-        CourseCommand courseCommand=new CourseCommand();
-        courseCommand.setProfessorId(Long.valueOf(professorId));
-        model.addAttribute("course",courseCommand);
-        return "courseform";
-    }
-    @PostMapping("professor/{professorId}/coursenew")
-    public String saveOrUpdate(@ModelAttribute CourseCommand command){
-        courseService.saveCourseCommand(command);
+    @GetMapping("/newscourseform")
+    public String addCourse(Model model){
 
-        System.out.println("Saving "+command.getName());
-        System.out.println("Saving "+command.getDescription());
-        return "redirect:/professordetail/{professorId}";
+        List<Professor> listProfessors = courseService.listProfessors();
+        model.addAttribute("course",new Course());
+        model.addAttribute("listProfessors", listProfessors);
+        return "courseform";
     }
+@GetMapping("/course/{id}/update")
+    public String updateCourse(@PathVariable String id,Model model){
+
+        List<Professor> listProfessors = courseService.listProfessors();
+        model.addAttribute("course",courseService.findCourseById(Long.valueOf(id)));
+        model.addAttribute("listProfessors", listProfessors);
+        return "courseform";
+    }
+
+
+    @PostMapping("course/save")
+    public String saveOrUpdate(@ModelAttribute Course course){
+
+
+        courseService.saveCourse(course);
+
+        System.out.println("Saving "+course.getName());
+        System.out.println("Saving "+course.getDescription());
+        return "redirect:/courses";
+    }
+
+    @GetMapping("course/{courseId}/delete")
+    public String deleteCourseById(@PathVariable String courseId){
+        courseService.deleteCourseById( Long.valueOf(courseId));
+        System.out.println("Deleting"+courseId);
+        return "redirect:/courses";
+    }
+
+
 
 }

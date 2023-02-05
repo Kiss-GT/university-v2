@@ -1,15 +1,20 @@
 package com.kgt.university.controller;
 
-import com.kgt.university.commands.CourseCommand;
-import com.kgt.university.commands.StudentCommand;
+
+import com.kgt.university.domain.Course;
+
+
+import com.kgt.university.domain.Student;
 import com.kgt.university.services.CourseService;
 import com.kgt.university.services.StudentService;
-import com.kgt.university.services.UniversityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.util.HashSet;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+import java.util.Set;
 
 
 @Slf4j
@@ -31,22 +36,28 @@ public class StudentController {
     }
     @RequestMapping("/newstudentform")
     public String addStudents(Model model){
-        model.addAttribute("student",new StudentCommand());
-        return "studentform";
-    }
-    @PostMapping
-    @RequestMapping("student")
-    public String sOrU(@ModelAttribute StudentCommand command){
-        StudentCommand savedCommand=studentService.saveStudentCommand(command);
 
-
-        return "redirect:/students";
+        List<Course> listCourses=courseService.getCourses();
+        model.addAttribute("student",new Student());
+        model.addAttribute("listCourses",listCourses);
+        return "editstudentform";
     }
+  /*  @RequestMapping("studentdetail/{id}/view")
+    public String viewStudent(@PathVariable String id,Model model){
+
+        model.addAttribute("student", studentService.findStudentById(Long.valueOf(id)));
+
+        return "studentdetail";
+    }*/
+
     @RequestMapping("studentdetail/{id}/update")
-    public String updateStudent(@PathVariable String id, Model model, StudentCommand command){
+    public String updateStudent(@PathVariable String id, Model model, Student command,RedirectAttributes redirectAttributes){
+        List<Course> listCourses=courseService.getCourses();
         model.addAttribute("student", studentService.findStudentById(Long.valueOf(id)));
         model.addAttribute("studentcourses", courseService.getCourses());
-       return "studentdetail";
+        model.addAttribute("listCourses",listCourses);
+        redirectAttributes.addFlashAttribute("message","The student has been saved successfully.");
+       return "editstudentform";
     }
     @GetMapping("studentdetail/{id}/delete")
     public String deleteById(@PathVariable String id){
@@ -55,22 +66,14 @@ public class StudentController {
         System.out.println("Deleting"+id);
         return "redirect:/students";
     }
-    @GetMapping("studentdetail/{studentId}/new")
-    public String newCourseToStudent(@PathVariable String studentId, Model model){
 
-      StudentCommand studentCommand= studentService.findStudentCommandById(Long.valueOf(studentId));
-
-
-        CourseCommand courseCommand=new CourseCommand();
-        //courseCommand.setStudentCommands(Long.valueOf(studentId));
-        model.addAttribute("course",courseCommand);
-        return "courseforstudentform";
-    }
     @PostMapping("/student/{studentId}/save")
-    public String saveCourseToStudent(@ModelAttribute StudentCommand command){
-        StudentCommand savedCommand=studentService.saveStudentCommand(command);
-       return "redirect:/studentdetail/{studentId}/update";
+    public String saveCourseToStudent(Student command, RedirectAttributes redirectAttributes){
+        studentService.saveStudent(command);
+        redirectAttributes.addFlashAttribute("message", "The student has been saved successfully.");
+        return "redirect:/students";
     }
+
 
 
 }

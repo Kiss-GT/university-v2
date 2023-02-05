@@ -40,8 +40,15 @@ public class DevBootStrap implements ApplicationListener<ContextRefreshedEvent> 
         Course geomorphology = new Course("Geomorphology", "Learn how nature shapes the land", prof2);
         Course gis = new Course("Gis", "Learn how to use ArcGis", prof2);
 
-        Student student1 = new Student("Jimmie", "Young");
-        Student student2 = new Student("Robyn", "Lockwood");
+
+        Student student1 = new Student();
+        Student student2 = new Student();
+
+         student1.setFirstName("Jimmie");
+        student1.setLastName("Young");
+        student2.setFirstName("Robyn");
+        student2.setLastName("Lockwood");
+
 
         prof1.setFirstName("Brennan");
         prof1.setLastName("Eliot");

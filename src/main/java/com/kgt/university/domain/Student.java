@@ -21,16 +21,19 @@ public class Student {
 
     private String lastName;
 
-    @ManyToMany(mappedBy = "students")
+    @ManyToMany
+    @JoinTable(name = "student_course",
+            joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id"))
     private Set<Course> courses=new HashSet<>();
 
 
 
-    public Student(String firstName, String lastName) {
+   /* public Student(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
 
-    }
+    }*/
 
 
 }
